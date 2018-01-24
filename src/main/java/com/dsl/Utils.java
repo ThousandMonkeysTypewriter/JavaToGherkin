@@ -7,12 +7,12 @@ import java.util.Scanner;
 
 public class Utils {
 
-  public static void readFile(String filename) throws IOException{
+  public static String readFile(String filename) throws IOException{
     FileReader files = null;
+    String txt = "";
     try {
       files = new FileReader(filename);
-      String line = new Scanner(files).nextLine();
-      System.err.println(line);
+      txt += new Scanner(files).nextLine();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -20,5 +20,7 @@ public class Utils {
       if (files!=null) 
         files.close(); 
     }
+    
+    return txt;
   }
 }
