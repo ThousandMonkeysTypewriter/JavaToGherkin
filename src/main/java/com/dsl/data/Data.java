@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.dsl.data.executor.DataLoader;
-import com.dsl.data.formats.redirect.RedirectDSL;
-import com.dsl.data.formats.redirect.RedirectData;
-import com.dsl.data.formats.redirect.RedirectUtils;
-import com.dsl.data.formats.redirect.RedirectsJson;
+import com.dsl.formats.redirect.RedirectDSL;
+import com.dsl.formats.redirect.RedirectData;
+import com.dsl.formats.redirect.RedirectUtils;
+import com.dsl.formats.redirect.RedirectsJson;
 import com.google.gson.Gson;
 
 public class Data {

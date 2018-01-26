@@ -1,4 +1,4 @@
-package com.dsl.data.formats.redirect;
+package com.dsl.formats.redirect;
 
 import java.util.ArrayList;
 import java.util.Collection;

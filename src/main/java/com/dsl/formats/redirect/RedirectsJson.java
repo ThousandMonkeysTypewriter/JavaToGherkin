@@ -1,4 +1,4 @@
-package com.dsl.data.formats.redirect;
+package com.dsl.formats.redirect;
 
 public class RedirectsJson {
   //"url":"http://www.mvideo.ru/podarochnye-karty","request":"подарочные карты","type":"Match Phrase"
