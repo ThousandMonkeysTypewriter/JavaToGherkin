@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.detectum.redirect.RedirectData;
-import com.detectum.redirect.RedirectsJson;
-
 public class RedirectUtils {
   
   public static Map<String, Collection<RedirectData>> loadRedirects(
