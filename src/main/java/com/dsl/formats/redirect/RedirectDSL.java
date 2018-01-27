@@ -48,10 +48,13 @@ public class RedirectDSL {
 
   public void check_redirects() throws Exception {
     for (ExecData d : data) {
+      System.err.println("%%%");
       exec.query_api(d);
       exec.parse_response_type(d);
       exec.is_redirect(d);
       exec.validate(d);
+      d.next_step();
+      System.err.println(d.flush_buffer());
     }
   }
 }

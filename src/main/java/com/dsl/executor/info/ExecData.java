@@ -32,6 +32,10 @@ public class ExecData {
     copy_previous_buffer(st);
   }
   
+  public String flush_buffer() {
+    return buffer.toString();
+  }
+  
   private void copy_previous_buffer(Step st) {
     buffer.get(carrier).fill_defaults(st);    
   }
@@ -76,5 +80,9 @@ class Step {
       HashMap<String, Element> map2) {
     for (Entry<String, Element> e : map2.entrySet()) 
       map1.put(e.getKey(), e.getValue());
-  }  
+  } 
+
+  public String toString () {
+    return "environment "+environment+", program"+program+", argument"+argument;
+  }
 }

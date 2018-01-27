@@ -23,7 +23,8 @@ public class Executor {
   
   public void query_api(ExecData d) throws Exception {
     d.next_step();
-    String json = Utils.readUrl((String)d.fromEnvironment("url_api").getValue());
+    String json = Utils.readUrl((String)d.fromEnvironment("url_api").getValue()+(String)d.fromArgument("query").getValue());
+    System.err.println((String)d.fromEnvironment("url_api").getValue()+(String)d.fromArgument("query").getValue());
 
     d.toEnvironment("api_response", json, false);
     d.toEnvironment("web", 1, true);
@@ -36,7 +37,7 @@ public class Executor {
     d.next_step();
     String s = (String)d.fromEnvironment("api_response").getValue();
     
-    s = s.substring(s.indexOf("\"type\":\"") + 1);
+    s = s.substring(s.indexOf("\"type\":\"") + 8);
     s = s.substring(0, s.indexOf("\""));
     
     d.toEnvironment("api_response_type", s, false);
@@ -48,6 +49,7 @@ public class Executor {
 
   public void is_redirect(ExecData d) {
     d.next_step();
+    System.err.println((String)d.fromEnvironment("api_response_type").getValue());
     
     if (((String)d.fromEnvironment("api_response_type").getValue()).equals("redirect"))
       d.toEnvironment("is_redirect", 1, true);
@@ -61,7 +63,7 @@ public class Executor {
   public void validate(ExecData d) {
     d.next_step();
     
-    if (((Integer)d.fromEnvironment("is_redirect").getValue()) == ((Integer)d.fromEnvironment("answer").getValue())) {
+    if (((Integer)d.fromEnvironment("is_redirect").getValue()) != ((Integer)d.fromEnvironment("answer").getValue())) {
       d.toProgram("id", ALARM);
       d.toProgram("program", "alarm");
     }

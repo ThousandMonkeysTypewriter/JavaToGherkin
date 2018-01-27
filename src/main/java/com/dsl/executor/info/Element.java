@@ -25,4 +25,14 @@ public class Element {
   public int getType() {
     return type;
   }
+  
+  public String toString () {
+    String ret;
+    
+    if (visible)
+        ret = "key: "+key+" value: "+value+" type: "+type+" visible: "+visible;
+    else
+        ret = "key: "+key+" type: "+type+" visible: "+visible;
+    return ret;
+  }
 }
