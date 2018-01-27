@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.dsl.data.executor.DataLoader;
 import com.dsl.formats.redirect.RedirectDSL;
 import com.dsl.formats.redirect.RedirectData;
 import com.dsl.formats.redirect.RedirectUtils;
@@ -36,9 +35,9 @@ public class Data {
         Set<String> qs = new HashSet<String>(queries);
         ArrayList<String> inputs = new ArrayList<String>(qs);
         
-        RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<>(Arrays.asList(outputs)), redirects);
+        RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<Integer>(Arrays.asList(outputs)), redirects);
         rdsl.check_redirects();
-        rdsl.save_data();
+        // rdsl.save_data();
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

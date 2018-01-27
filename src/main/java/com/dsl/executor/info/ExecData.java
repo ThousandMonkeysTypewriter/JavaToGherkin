@@ -1,6 +1,7 @@
 package com.dsl.executor.info;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.dsl.executor.Executor;
@@ -10,6 +11,7 @@ public class ExecData {
   int carrier;
 
   public ExecData() {
+    buffer = new HashMap<Integer, Step>();
     carrier = 0;
     update_buffer();
   }
