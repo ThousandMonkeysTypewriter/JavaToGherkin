@@ -36,6 +36,10 @@ public class ExecData {
     return buffer.toString();
   }
   
+  public void clear() {
+    buffer.clear();
+  }
+  
   private void copy_previous_buffer(Step st) {
     buffer.get(carrier).fill_defaults(st);    
   }

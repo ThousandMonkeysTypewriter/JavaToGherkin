@@ -27,8 +27,12 @@ public class Data {
       try {
         redirects = RedirectUtils.loadRedirects(
             new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/redirects.json"), RedirectsJson[].class));
+        int count = 0;
         for ( ArrayList<String> r : new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/all_requests.json"), ArrayList[].class)) {
+          if (count > 100000)
+              break;
           queries.add(r.get(0).trim().toLowerCase());
+          count ++;
         }
         Integer[] outputs = new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/answers.json"), Integer[].class);
         

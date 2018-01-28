@@ -3,6 +3,7 @@ package com.dsl.executor;
 import com.dsl.data.Utils;
 import com.dsl.executor.info.ExecData;
 import com.google.gson.Gson;
+import java.net.URLEncoder;
 
 public class Executor {
 
@@ -21,10 +22,14 @@ public class Executor {
   
   Gson gson = new Gson();
   
+  int alarms = 0;
+  int no_alarms = 0;
+  
   public void query_api(ExecData d) throws Exception {
     d.next_step();
-    String json = Utils.readUrl((String)d.fromEnvironment("url_api").getValue()+(String)d.fromArgument("query").getValue());
-    System.err.println((String)d.fromEnvironment("url_api").getValue()+(String)d.fromArgument("query").getValue());
+    String url = (String)d.fromEnvironment("url_api").getValue()+URLEncoder.encode((String)d.fromArgument("query").getValue(), "UTF-8");
+    String json = Utils.readUrl(url);
+    System.err.println(url+" - "+json.length());
 
     d.toEnvironment("api_response", json, false);
     d.toEnvironment("web", 1, true);
@@ -49,9 +54,9 @@ public class Executor {
 
   public void is_redirect(ExecData d) {
     d.next_step();
-    System.err.println((String)d.fromEnvironment("api_response_type").getValue());
     
-    if (((String)d.fromEnvironment("api_response_type").getValue()).equals("redirect"))
+    //if (((String)d.fromEnvironment("api_response_type").getValue()).equals("redirect"))
+    if (((String)d.fromArgument("query").getValue()).contains("а"))
       d.toEnvironment("is_redirect", 1, true);
     else
       d.toEnvironment("is_redirect", 0, true);
@@ -66,10 +71,14 @@ public class Executor {
     if (((Integer)d.fromEnvironment("is_redirect").getValue()) != ((Integer)d.fromEnvironment("answer").getValue())) {
       d.toProgram("id", ALARM);
       d.toProgram("program", "alarm");
+      alarms += 1;
     }
     else {
       d.toProgram("id", NO_ALARM);
       d.toProgram("program", "no_alarm");
+      no_alarms += 1;
     }
+    
+    System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
   }
 }
