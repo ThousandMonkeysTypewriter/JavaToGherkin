@@ -35,4 +35,8 @@ public class Element {
         ret = "key: "+key+" type: "+type+" visible: "+visible;
     return ret;
   }
+  
+  public boolean isVisible() {
+    return visible;
+  }
 }

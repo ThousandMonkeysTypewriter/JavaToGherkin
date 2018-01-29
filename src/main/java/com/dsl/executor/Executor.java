@@ -79,6 +79,8 @@ public class Executor {
       no_alarms += 1;
     }
     
+    d.toEnvironment("terminate", true, true);
+    
     System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
   }
 }

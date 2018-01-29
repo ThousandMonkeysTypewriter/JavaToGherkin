@@ -2,15 +2,14 @@ package com.dsl.formats.redirect;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.dsl.data.Utils;
 import com.dsl.executor.Executor;
-import com.dsl.executor.info.Element;
 import com.dsl.executor.info.ExecData;
+import com.dsl.executor.info.Step;
 import com.google.gson.Gson;
 
 public class RedirectDSL {
@@ -23,8 +22,10 @@ public class RedirectDSL {
       Map<String, Collection<RedirectData>> redirects) {
     int count = 0;
     for (String q : inputs) {
-      qoh.put(count, q);
-      count ++;
+      if (!q.isEmpty()) {
+        qoh.put(count, q);
+        count ++;
+      }
     }
 
     for (Entry<Integer, String> q : qoh.entrySet()) {
@@ -35,6 +36,7 @@ public class RedirectDSL {
       d.toEnvironment("url_api", "http://yenisei.detectum.com:1919/search_default?region_id=1&q=", false);
 //    d.toEnvironment("answer", outputs.get(q.getKey()), true);
       d.toEnvironment("answer", 1, true);
+      d.toEnvironment("terminate", false, true);
 
       d.toArgument("id", q.getKey());
       d.toArgument("query", q.getValue());
@@ -47,15 +49,21 @@ public class RedirectDSL {
   }
 
   public void check_redirects() throws Exception {
+    ArrayList<HashMap<Integer, Step>> out = new ArrayList<HashMap<Integer, Step>>();
     for (ExecData d : data) {
       //System.err.println("%%%");
     //  exec.query_api(d);
     //  exec.parse_response_type(d);
       exec.is_redirect(d);
       exec.validate(d);
-      d.next_step();
+      
+      d.flush_buffer(out);
       d.clear();
-      //System.err.println(d.flush_buffer());
     }
+    String strout = new Gson().toJson(out);
+    ArrayList<String> tmp = new ArrayList<String>();
+    tmp.add(strout);
+    
+    Utils.writeFile(tmp, "/root/NeuralProgramSynthesis/dsl/data/data_buffer.json");
   }
 }

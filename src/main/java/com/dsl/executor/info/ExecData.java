@@ -1,7 +1,7 @@
 package com.dsl.executor.info;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import com.dsl.executor.Executor;
@@ -32,12 +32,13 @@ public class ExecData {
     copy_previous_buffer(st);
   }
   
-  public String flush_buffer() {
-    return buffer.toString();
+  public void flush_buffer(ArrayList<HashMap<Integer, Step>> out) {
+    out.add(buffer);
   }
   
   public void clear() {
-    buffer.clear();
+    for (Entry<Integer, Step> b : buffer.entrySet())
+      b.getValue().clear();
   }
   
   private void copy_previous_buffer(Step st) {
@@ -66,27 +67,5 @@ public class ExecData {
   
   public Element fromProgram(String k) {
     return buffer.get(carrier).program.get(k);
-  }
-}
-
-class Step {
-  public HashMap<String, Element> environment = new HashMap<String, Element>();
-  public HashMap<String, Element> program = new HashMap<String, Element>();
-  public HashMap<String, Element> argument = new HashMap<String, Element>();
-  
-  public void fill_defaults(Step st) {
-    copy_from(environment, st.environment);
-    copy_from(program, st.program);
-    copy_from(argument, st.argument);
-  }
-
-  private void copy_from(HashMap<String, Element> map1,
-      HashMap<String, Element> map2) {
-    for (Entry<String, Element> e : map2.entrySet()) 
-      map1.put(e.getKey(), e.getValue());
-  } 
-
-  public String toString () {
-    return "environment "+environment+", program"+program+", argument"+argument;
   }
 }
