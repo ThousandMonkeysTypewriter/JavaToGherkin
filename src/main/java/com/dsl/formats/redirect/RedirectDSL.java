@@ -36,6 +36,7 @@ public class RedirectDSL {
       d.toEnvironment("url_api", "http://yenisei.detectum.com:1919/search_default?region_id=1&q=", false);
 //    d.toEnvironment("answer", outputs.get(q.getKey()), true);
       d.toEnvironment("answer", 1, true);
+      d.toEnvironment("is_redirect", 0, true);
       d.toEnvironment("terminate", false, true);
 
       d.toArgument("id", q.getKey());

@@ -57,9 +57,9 @@ public class Executor {
     
     //if (((String)d.fromEnvironment("api_response_type").getValue()).equals("redirect"))
     if (((String)d.fromArgument("query").getValue()).contains("а"))
-      d.toEnvironment("is_redirect", 1, true);
+      d.toEnvironment("is_redirect", 2, true);
     else
-      d.toEnvironment("is_redirect", 0, true);
+      d.toEnvironment("is_redirect", 1, true);
     
     d.toProgram("id", CHECK);
     d.toProgram("program", "check");
