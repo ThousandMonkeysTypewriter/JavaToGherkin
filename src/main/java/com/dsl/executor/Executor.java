@@ -3,7 +3,20 @@ package com.dsl.executor;
 import com.dsl.data.Utils;
 import com.dsl.executor.info.ExecData;
 import com.google.gson.Gson;
+
+import java.net.InetAddress;
 import java.net.URLEncoder;
+
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.common.settings.Settings;
 
 public class Executor {
 
@@ -57,9 +70,9 @@ public class Executor {
     
     //if (((String)d.fromEnvironment("api_response_type").getValue()).equals("redirect"))
     if (((String)d.fromArgument("query").getValue()).contains("а"))
-      d.toEnvironment("is_redirect", 2, true);
+      d.toEnvironment("output", 2, true);
     else
-      d.toEnvironment("is_redirect", 1, true);
+      d.toEnvironment("output", 1, true);
     
     d.toProgram("id", CHECK);
     d.toProgram("program", "check");
@@ -68,7 +81,7 @@ public class Executor {
   public void validate(ExecData d) {
     d.next_step();
     
-    if (((Integer)d.fromEnvironment("is_redirect").getValue()) != ((Integer)d.fromEnvironment("answer").getValue())) {
+    if (((Integer)d.fromEnvironment("output").getValue()) != ((Integer)d.fromEnvironment("answer").getValue())) {
       d.toProgram("id", ALARM);
       d.toProgram("program", "alarm");
       alarms += 1;
@@ -80,6 +93,14 @@ public class Executor {
     }
     
     d.toEnvironment("terminate", true, true);
+    
+    System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
+  }
+  
+  public void load_period(ExecData d) {
+    d.next_step();
+    
+    d.toEnvironment("terminate", true, false);
     
     System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
   }
