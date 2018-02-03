@@ -59,19 +59,22 @@ public class Data {
       } else if (args[0].equals("ad_log_query")) {
         ArrayList<Event> inputs = new ArrayList<Event>();
         
+        int count = 0;
         BufferedReader br = new BufferedReader(new FileReader("/root/NeuralProgramSynthesis/dsl/data/logs/"+args[1]+".json"));
         for(String line; (line = br.readLine()) != null; ) {
           Event e = new Gson().fromJson(line.replace("@timestamp", "timestamp"), Event.class);
           if (e._source != null) {
             inputs.add(e);
             e.setTimes();
+            e.setId(count);
           }
+          count++;
         }
         br.close();
         
         ArrayList<Integer> outputs = null;
 
-        LogDSL log_dsl = new LogDSL(inputs, outputs);
+        LogDSL log_dsl = new LogDSL(inputs, outputs, args[1], args[2]);
         log_dsl.detect_anomaity_query_logs();
       }
     } catch (Exception e) {

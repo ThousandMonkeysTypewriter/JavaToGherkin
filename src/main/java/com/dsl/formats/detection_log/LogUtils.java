@@ -6,22 +6,7 @@ import java.util.Map;
 
 public class LogUtils {
 
-  public static int countThisMinute(Event e) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  public static int count5Minutes(Event e) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-  
-  public static int count3Minutes(Event e) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-  
-  public static int count1Minutes(Event e) {
+  public static int countAtMinute(Event e, ArrayList<Event> es, int ago) {
     // TODO Auto-generated method stub
     return 0;
   }

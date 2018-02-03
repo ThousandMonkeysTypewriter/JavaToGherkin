@@ -28,6 +28,8 @@ public class Executor {
   private static final int ALARM    = 4;
   private static final int NO_ALARM = 5;
   
+  private static final int LOAD_LOG = 6;
+  
   //traces
   public static final int ENVIRONMENT = 1;
   public static final int PROGRAM     = 2;
@@ -67,15 +69,30 @@ public class Executor {
 
   public void is_redirect(ExecData d) {
     d.next_step();
+
+    inner_check(((String)d.fromArgument("query").getValue()).contains("а"))
+  }
+  
+  public void compare_to_period(ExecData d) {
+    int period = (Integer)d.fromEnvironment("period").getValue();
     
-    //if (((String)d.fromEnvironment("api_response_type").getValue()).equals("redirect"))
-    if (((String)d.fromArgument("query").getValue()).contains("а"))
-      d.toEnvironment("output", 2, true);
-    else
-      d.toEnvironment("output", 1, true);
+    int now = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromArgument("log").getValue(), 0);
+    int ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromArgument("log").getValue(), periods);
     
-    d.toProgram("id", CHECK);
-    d.toProgram("program", "check");
+    int min;
+    int max;
+    
+    if (now > ago) {
+      min = ago;
+      max = now;
+    } else {
+      min = now;
+      max = ago;      
+    }
+    
+    double percent_diff = (max - min) / (min / 100);
+    
+    inner_check(percent_diff > 30)
   }
 
   public void validate(ExecData d) {
@@ -97,11 +114,19 @@ public class Executor {
     System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
   }
   
-  public void load_period(ExecData d) {
-    d.next_step();
+  /**
+  *###############################################################
+  */
+  
+  private void inner_check(boolean condition) {
+    if (((Integer)d.fromEnvironment("output").getValue()) == 0) {
+      if (condition)
+        d.toEnvironment("output", 2, true);
+      else
+        d.toEnvironment("output", 1, true);
+    }
     
-    d.toEnvironment("terminate", true, false);
-    
-    System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
+    d.toProgram("id", CHECK);
+    d.toProgram("program", "check");
   }
 }

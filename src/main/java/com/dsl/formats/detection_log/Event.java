@@ -9,6 +9,7 @@ import java.util.Date;
 public class Event {
   public Source _source;
   public Date date;
+  public int id;
   
   public int year;
   public int month;
@@ -22,6 +23,14 @@ public class Event {
     return _source.timestamp;
   }
 
+  public void setId (int id_) {
+     id = id_;
+  }
+  
+  public int getId () {
+     return id;
+  }
+  
   public void setTimes() throws ParseException {
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     date = df.parse(_source.timestamp);
