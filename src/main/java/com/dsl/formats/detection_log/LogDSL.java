@@ -18,7 +18,7 @@ public class LogDSL extends DSL {
     for (Event e : inputs) {
       ExecData d = new ExecData();
       
-      d.toEnvironment("answer", 0, true);
+      d.toEnvironment("answer", 2, true);
       d.toEnvironment("period", 5, true);
       d.toEnvironment("output", 0, true);
       d.toEnvironment("terminate", false, true);
@@ -36,8 +36,7 @@ public class LogDSL extends DSL {
     }
   }
 
-  public void detect_anomaity_query_logs() {
-    ArrayList<HashMap<Integer, Step>> out = new ArrayList<HashMap<Integer, Step>>();
+  public void detect_anomaity_query_logs()throws Exception {
     for (ExecData d : data) {
       exec.compare_to_period(d);
       exec.validate(d);
@@ -45,6 +44,7 @@ public class LogDSL extends DSL {
       d.flush_buffer(out);
       d.clear();
     }
+    send();
   }
 }
 

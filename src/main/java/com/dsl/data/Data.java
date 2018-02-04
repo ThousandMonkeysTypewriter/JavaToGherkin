@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 
 public class Data {
 
-  public static final int limit = 100000;
+  public static final int limit = 15000;
 
   public static void main(String[] args) {
     int count = 0;
@@ -59,11 +59,12 @@ public class Data {
       } else if (args[0].equals("ad_log_query")) {
         ArrayList<Event> inputs = new ArrayList<Event>();
         
-        int count = 0;
         BufferedReader br = new BufferedReader(new FileReader("/root/NeuralProgramSynthesis/dsl/data/logs/"+args[1]+".json"));
         for(String line; (line = br.readLine()) != null; ) {
           Event e = new Gson().fromJson(line.replace("@timestamp", "timestamp"), Event.class);
           if (e._source != null) {
+            if (count > limit)
+                break;
             inputs.add(e);
             e.setTimes();
             e.setId(count);
@@ -74,7 +75,7 @@ public class Data {
         
         ArrayList<Integer> outputs = null;
 
-        LogDSL log_dsl = new LogDSL(inputs, outputs, args[1], args[2]);
+        LogDSL log_dsl = new LogDSL(inputs, outputs, args[1], Integer.parseInt(args[2]));
         log_dsl.detect_anomaity_query_logs();
       }
     } catch (Exception e) {

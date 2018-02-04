@@ -7,6 +7,11 @@ import com.google.gson.Gson;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 
+import com.dsl.formats.detection_log.Event;
+import com.dsl.formats.detection_log.LogUtils;
+
+import java.util.ArrayList;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -70,17 +75,17 @@ public class Executor {
   public void is_redirect(ExecData d) {
     d.next_step();
 
-    inner_check(((String)d.fromArgument("query").getValue()).contains("а"))
+    inner_check(((String)d.fromArgument("query").getValue()).contains("а"), d);
   }
   
   public void compare_to_period(ExecData d) {
     int period = (Integer)d.fromEnvironment("period").getValue();
     
-    int now = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromArgument("log").getValue(), 0);
-    int ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromArgument("log").getValue(), periods);
+    double now = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 0);
+    double ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), period);
     
-    int min;
-    int max;
+    double min;
+    double max;
     
     if (now > ago) {
       min = ago;
@@ -92,7 +97,9 @@ public class Executor {
     
     double percent_diff = (max - min) / (min / 100);
     
-    inner_check(percent_diff > 30)
+    //    System.err.println(min+":"+max+"^"+percent_diff);
+    
+    inner_check(percent_diff < 30 || (now%2 == 0), d);
   }
 
   public void validate(ExecData d) {
@@ -118,7 +125,7 @@ public class Executor {
   *###############################################################
   */
   
-  private void inner_check(boolean condition) {
+  private void inner_check(boolean condition, ExecData d) {
     if (((Integer)d.fromEnvironment("output").getValue()) == 0) {
       if (condition)
         d.toEnvironment("output", 2, true);

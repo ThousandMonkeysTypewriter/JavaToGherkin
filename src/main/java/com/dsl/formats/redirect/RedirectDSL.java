@@ -50,7 +50,6 @@ public class RedirectDSL extends DSL {
   }
 
   public void check_redirects() throws Exception {
-    ArrayList<HashMap<Integer, Step>> out = new ArrayList<HashMap<Integer, Step>>();
     for (ExecData d : data) {
       //System.err.println("%%%");
     //  exec.query_api(d);
@@ -61,10 +60,6 @@ public class RedirectDSL extends DSL {
       d.flush_buffer(out);
       d.clear();
     }
-    String strout = new Gson().toJson(out);
-    ArrayList<String> tmp = new ArrayList<String>();
-    tmp.add(strout);
-    
-    Utils.writeFile(tmp, "/root/NeuralProgramSynthesis/dsl/data/data_buffer.json");
+    send();
   }
 }
