@@ -6,6 +6,7 @@ import com.dsl.DSL;
 import com.dsl.executor.Executor;
 import com.dsl.executor.info.ExecData;
 import com.dsl.executor.info.Step;
+import com.dsl.formats.detection_log.LogUtils;
 
 public class LogDSL extends DSL {
 
@@ -19,14 +20,17 @@ public class LogDSL extends DSL {
       ExecData d = new ExecData();
       
       d.toEnvironment("answer", 2, true);
-      d.toEnvironment("period", 5, true);
+      d.toEnvironment("date1", 0, true);
+      d.toEnvironment("date2", 0, true);
+      d.toEnvironment("date1_diff", 0, true);
+      d.toEnvironment("date2_diff", 0, true);
       d.toEnvironment("output", 0, true);
       d.toEnvironment("terminate", false, true);
       d.toEnvironment("client_id", client_id, true);
       d.toEnvironment("client", client, false);
       d.toEnvironment("log", inputs, false);
 
-      d.toArgument("id", e.getId());
+      d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0));
       d.toArgument("event", e);
       
       d.toProgram("id", Executor.BEGIN);
@@ -39,6 +43,8 @@ public class LogDSL extends DSL {
   public void detect_anomaity_query_logs()throws Exception {
     for (ExecData d : data) {
       exec.compare_to_period(d);
+      exec.compare_to_period(d);
+      exec.anomaly_detect(d);
       exec.validate(d);
 
       d.flush_buffer(out);

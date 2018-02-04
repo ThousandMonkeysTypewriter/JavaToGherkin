@@ -29,11 +29,10 @@ public class Executor {
   public static final int BEGIN     = 0;
   private static final int CALL_API = 1;
   private static final int PARSE    = 2;
+  private static final int DIFF     = 6;
   private static final int CHECK    = 3;
   private static final int ALARM    = 4;
   private static final int NO_ALARM = 5;
-  
-  private static final int LOAD_LOG = 6;
   
   //traces
   public static final int ENVIRONMENT = 1;
@@ -78,28 +77,42 @@ public class Executor {
     inner_check(((String)d.fromArgument("query").getValue()).contains("а"), d);
   }
   
-  public void compare_to_period(ExecData d) {
-    int period = (Integer)d.fromEnvironment("period").getValue();
-    
-    double now = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 0);
-    double ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), period);
-    
-    double min;
-    double max;
-    
-    if (now > ago) {
-      min = ago;
-      max = now;
-    } else {
-      min = now;
-      max = ago;      
+  public void compare_to_period (ExecData d) {
+    d.next_step();
+
+    double ago;
+    double now = ((Integer)d.fromArgument("id").getValue())*1.0;
+
+    if ((Integer)d.fromEnvironment("date1").getValue() == 0) {
+        ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 1);
+        int diff = get_percent_diff(now, ago);
+        
+        d.toEnvironment("date1", (int)ago, true);
+        d.toEnvironment("date1_diff", diff, true);
     }
-    
-    double percent_diff = (max - min) / (min / 100);
-    
+    else {
+        ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 5);
+        int diff = get_percent_diff(now, ago);
+        
+        if (diff > 100) {
+            System.err.println(now+", "+ago+", "+diff);
+            System.exit(1);
+        }
+        d.toEnvironment("date2", (int)ago, true);
+        d.toEnvironment("date2_diff", diff, true);
+    }
+        
     //    System.err.println(min+":"+max+"^"+percent_diff);
-    
-    inner_check(percent_diff < 30 || (now%2 == 0), d);
+
+    d.toProgram("id", DIFF);
+    d.toProgram("program", "diff");
+  }
+  
+  public void anomaly_detect (ExecData d) {
+    d.next_step();
+    System.err.println((Integer)d.fromEnvironment("date1_diff").getValue());
+    System.err.println((Integer)d.fromEnvironment("date2_diff").getValue());
+    inner_check(((Integer)d.fromEnvironment("date2_diff").getValue() < 30) && ((Integer)d.fromEnvironment("date1_diff").getValue() < 30), d);   
   }
 
   public void validate(ExecData d) {
@@ -135,5 +148,23 @@ public class Executor {
     
     d.toProgram("id", CHECK);
     d.toProgram("program", "check");
+  }
+  
+  private int get_percent_diff(double now, double ago) {
+    double min;
+    double max;
+    
+    if (now > ago) {
+      min = ago;
+      max = now;
+    } else {
+      min = now;
+      max = ago;      
+    }
+    
+    if ( (max - min) > min )
+        return 100;
+    else
+        return (int)((max - min) / (min / 100));
   }
 }
