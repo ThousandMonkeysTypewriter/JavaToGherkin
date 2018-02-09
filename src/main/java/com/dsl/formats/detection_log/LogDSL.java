@@ -13,6 +13,11 @@ public class LogDSL extends DSL {
   HashMap<Integer, String> qoh = new HashMap<Integer, String>();
   ArrayList<ExecData> data = new ArrayList<ExecData>();
   Executor exec = new Executor();
+  
+  private static final int ERROR = 1;
+  private static final int COUNT = 1;
+  private static final int TIME = 1;
+
 
   public LogDSL(ArrayList<Event> inputs, ArrayList<Integer> outputs, String client, int client_id) {
     super(inputs, outputs);
@@ -29,6 +34,8 @@ public class LogDSL extends DSL {
       d.toEnvironment("client_id", client_id, true);
       d.toEnvironment("client", client, false);
       d.toEnvironment("log", inputs, false);
+      
+      d.toEnvironment("anomaly_type", ERROR, false);
 
       d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0));
       d.toArgument("event", e);
@@ -42,8 +49,7 @@ public class LogDSL extends DSL {
 
   public void detect_anomaity_query_logs()throws Exception {
     for (ExecData d : data) {
-      exec.compare_to_period(d);
-      exec.compare_to_period(d);
+      exec.prepare_data(d);
       exec.anomaly_detect(d);
       exec.validate(d);
 

@@ -33,6 +33,24 @@ public class Utils {
     return txt;
   }
   
+  public static int get_percent_diff(double now, double ago) {
+    double min;
+    double max;
+    
+    if (now > ago) {
+      min = ago;
+      max = now;
+    } else {
+      min = now;
+      max = ago;      
+    }
+    
+    if ( (max - min) > min )
+        return 100;
+    else
+        return (int)((max - min) / (min / 100));
+  }
+  
   public static void writeFile(List<String> lines, String filename) throws IOException {
     Path file = Paths.get(filename);
     Files.write(file, lines, Charset.forName("UTF-8"));

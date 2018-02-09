@@ -2,6 +2,7 @@ package com.dsl.executor;
 
 import com.dsl.data.Utils;
 import com.dsl.executor.info.ExecData;
+import com.dsl.executor.subprocess.SubProcess;
 import com.google.gson.Gson;
 
 import java.net.InetAddress;
@@ -27,17 +28,19 @@ public class Executor {
 
   //programs
   public static final int BEGIN     = 0;
-  private static final int CALL_API = 1;
-  private static final int PARSE    = 2;
-  private static final int DIFF     = 6;
-  private static final int CHECK    = 3;
-  private static final int ALARM    = 4;
-  private static final int NO_ALARM = 5;
+  public static final int CALL_API = 1;
+  public static final int PARSE    = 2;
+  public static final int DIFF     = 6;
+  public static final int CHECK    = 3;
+  public static final int ALARM    = 4;
+  public static final int NO_ALARM = 5;
   
   //traces
   public static final int ENVIRONMENT = 1;
   public static final int PROGRAM     = 2;
   public static final int ARGUMENT   = 3;
+  
+  private SubProcess sub = new SubProcess();
   
   Gson gson = new Gson();
   
@@ -74,7 +77,12 @@ public class Executor {
   public void is_redirect(ExecData d) {
     d.next_step();
 
-    inner_check(((String)d.fromArgument("query").getValue()).contains("а"), d);
+    sub.inner_check(((String)d.fromArgument("query").getValue()).contains("а"), d);
+  }
+  
+  public void prepare_data(ExecData d) {
+    // TODO Auto-generated method stub
+    
   }
   
   public void compare_to_period (ExecData d) {
@@ -85,14 +93,14 @@ public class Executor {
 
     if ((Integer)d.fromEnvironment("date1").getValue() == 0) {
         ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 1);
-        int diff = get_percent_diff(now, ago);
+        int diff = Utils.get_percent_diff(now, ago);
         
         d.toEnvironment("date1", (int)ago, true);
         d.toEnvironment("date1_diff", diff, true);
     }
     else {
         ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 5);
-        int diff = get_percent_diff(now, ago);
+        int diff = Utils.get_percent_diff(now, ago);
         
         if (diff > 100) {
             System.err.println(now+", "+ago+", "+diff);
@@ -112,7 +120,7 @@ public class Executor {
     d.next_step();
     System.err.println((Integer)d.fromEnvironment("date1_diff").getValue());
     System.err.println((Integer)d.fromEnvironment("date2_diff").getValue());
-    inner_check(((Integer)d.fromEnvironment("date2_diff").getValue() < 30) && ((Integer)d.fromEnvironment("date1_diff").getValue() < 30), d);   
+    sub.inner_check(((Integer)d.fromEnvironment("date2_diff").getValue() < 30) && ((Integer)d.fromEnvironment("date1_diff").getValue() < 30), d);   
   }
 
   public void validate(ExecData d) {
@@ -132,39 +140,5 @@ public class Executor {
     d.toEnvironment("terminate", true, true);
     
     System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
-  }
-  
-  /**
-  *###############################################################
-  */
-  
-  private void inner_check(boolean condition, ExecData d) {
-    if (((Integer)d.fromEnvironment("output").getValue()) == 0) {
-      if (condition)
-        d.toEnvironment("output", 2, true);
-      else
-        d.toEnvironment("output", 1, true);
-    }
-    
-    d.toProgram("id", CHECK);
-    d.toProgram("program", "check");
-  }
-  
-  private int get_percent_diff(double now, double ago) {
-    double min;
-    double max;
-    
-    if (now > ago) {
-      min = ago;
-      max = now;
-    } else {
-      min = now;
-      max = ago;      
-    }
-    
-    if ( (max - min) > min )
-        return 100;
-    else
-        return (int)((max - min) / (min / 100));
   }
 }

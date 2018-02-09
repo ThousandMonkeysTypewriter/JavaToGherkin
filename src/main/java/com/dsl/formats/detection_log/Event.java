@@ -22,6 +22,14 @@ public class Event {
   public String getTimeStamp() {
     return _source.timestamp;
   }
+  
+  public Double getRequestTime() {
+    return _source.request_time;
+  }
+  
+  public Integer getStatus() {
+    return _source.status;
+  }
 
   public void setId (int id_) {
      id = id_;
