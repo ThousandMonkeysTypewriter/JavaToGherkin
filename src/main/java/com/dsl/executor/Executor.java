@@ -27,7 +27,7 @@ import org.elasticsearch.common.settings.Settings;
 public class Executor {
 
   //programs
-  public static final int BEGIN     = 0;
+  public static final int BEGIN    = 0;
   public static final int CALL_API = 1;
   public static final int PARSE    = 2;
   public static final int DIFF     = 6;
