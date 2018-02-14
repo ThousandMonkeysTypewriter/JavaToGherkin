@@ -38,16 +38,17 @@ public class LogDSL extends DSL {
     
       d.toProgram("id", Executor.BEGIN);
       d.toProgram("program", "begin");
+      
+      d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0, command));
+      d.toArgument("event", e);
     
-      if (command.equals("query")) {
+      if (command.equals("query")) 
         d.toEnvironment("anomaly_type", QUERY, false);
-
-        d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0));
-        d.toArgument("event", e);
-
-      } else if (command.equals("status")) {
-      } else if (command.equals("sla")) {
-      }
+      else if (command.equals("status")) 
+        d.toEnvironment("anomaly_type", STATUS, false);
+      else if (command.equals("sla")) 
+        d.toEnvironment("anomaly_type", SLA, false);
+      
       data.add(d); 
     }
   }
@@ -59,7 +60,9 @@ public class LogDSL extends DSL {
         exec.compare_to_period(d);
         exec.compare_to_period(d);
       } else if (command.equals("status")) {
+        exec.check_status(d);
       } else if (command.equals("sla")) {
+        exec.check_time(d);
       }
       
       exec.prepare_data(d);

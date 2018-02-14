@@ -144,4 +144,14 @@ public class Executor {
     
     System.err.println("alarm: "+alarms+", no_alarm: "+no_alarms);
   }
+
+  public void check_status(ExecData d) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void check_time(ExecData d) {
+    // TODO Auto-generated method stub
+    
+  }
 }
