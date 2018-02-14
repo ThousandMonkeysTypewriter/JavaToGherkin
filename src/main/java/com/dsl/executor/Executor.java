@@ -27,18 +27,18 @@ import org.elasticsearch.common.settings.Settings;
 public class Executor {
 
   //programs
-  public static final int BEGIN    = 0;
-  public static final int CALL_API = 1;
-  public static final int PARSE    = 2;
-  public static final int DIFF     = 6;
-  public static final int CHECK    = 3;
-  public static final int ALARM    = 4;
-  public static final int NO_ALARM = 5;
+  public static final int BEGIN        = 0;
+  public static final int CALL_API     = 1;
+  public static final int PARSE        = 2;
+  public static final int DIFF         = 6;
+  public static final int CHECK        = 3;
+  public static final int ALARM        = 4;
+  public static final int NO_ALARM     = 5;
   
   //traces
-  public static final int ENVIRONMENT = 1;
-  public static final int PROGRAM     = 2;
-  public static final int ARGUMENT   = 3;
+  public static final int ENVIRONMENT  = 1;
+  public static final int PROGRAM      = 2;
+  public static final int ARGUMENT     = 3;
   
   private SubProcess sub = new SubProcess();
   
@@ -97,6 +97,9 @@ public class Executor {
         
         d.toEnvironment("date1", (int)ago, true);
         d.toEnvironment("date1_diff", diff, true);
+        
+        System.err.println("#"+(Integer)d.fromEnvironment("date1_diff").getValue());
+        System.err.println("#"+(Integer)d.fromEnvironment("date2_diff").getValue());
     }
     else {
         ago = LogUtils.countAtMinute((Event)d.fromArgument("event").getValue(), (ArrayList<Event>)d.fromEnvironment("log").getValue(), 5);

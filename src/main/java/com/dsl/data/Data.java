@@ -56,10 +56,13 @@ public class Data {
 
         RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<Integer>(Arrays.asList(outputs)), redirects);
         rdsl.check_redirects();
-      } else if (args[0].equals("ad_log_query")) {
+      } else if (args[0].equals("log")) {
         ArrayList<Event> inputs = new ArrayList<Event>();
-        
-        BufferedReader br = new BufferedReader(new FileReader("/root/NeuralProgramSynthesis/dsl/data/logs/"+args[1]+".json"));
+        String client = args[2];
+        int client_id =  Integer.parseInt(args[3]);
+        String command = args[1];
+                
+        BufferedReader br = new BufferedReader(new FileReader("/root/NeuralProgramSynthesis/dsl/data/logs/"+client+".json"));
         for(String line; (line = br.readLine()) != null; ) {
           Event e = new Gson().fromJson(line.replace("@timestamp", "timestamp"), Event.class);
           if (e._source != null) {
@@ -75,8 +78,8 @@ public class Data {
         
         ArrayList<Integer> outputs = null;
 
-        LogDSL log_dsl = new LogDSL(inputs, outputs, args[1], Integer.parseInt(args[2]));
-        log_dsl.detect_anomaity_query_logs();
+        LogDSL log_dsl = new LogDSL(inputs, outputs, client, command, client_id);
+        log_dsl.execute(command);
       }
     } catch (Exception e) {
       e.printStackTrace();

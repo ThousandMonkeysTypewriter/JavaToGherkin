@@ -46,7 +46,7 @@ public class ExecData {
   }
 
   public void toEnvironment(String k, Object v, boolean visible) {
-    buffer.get(carrier).environment.put(k, new Element(k, v, Executor.ENVIRONMENT, visible));
+    buffer.get(carrier).supervised_env.put(k, new Element(k, v, Executor.ENVIRONMENT, visible));
   }
   
   public void toProgram(String k, Object v) {
@@ -58,7 +58,7 @@ public class ExecData {
   }
   
   public Element fromEnvironment(String k) {
-    return buffer.get(carrier).environment.get(k);
+    return buffer.get(carrier).supervised_env.get(k);
   }
   
   public Element fromArgument(String k) {

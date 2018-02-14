@@ -2,6 +2,7 @@ package com.dsl.formats.detection_log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.dsl.DSL;
 import com.dsl.executor.Executor;
 import com.dsl.executor.info.ExecData;
@@ -14,16 +15,16 @@ public class LogDSL extends DSL {
   ArrayList<ExecData> data = new ArrayList<ExecData>();
   Executor exec = new Executor();
   
-  private static final int ERROR = 1;
-  private static final int COUNT = 1;
-  private static final int TIME = 1;
+  private static final int QUERY  = 1;
+  private static final int SLA    = 1;
+  private static final int STATUS = 1;
 
 
-  public LogDSL(ArrayList<Event> inputs, ArrayList<Integer> outputs, String client, int client_id) {
+  public LogDSL(ArrayList<Event> inputs, ArrayList<Integer> outputs, String client, String command, int client_id) {
     super(inputs, outputs);
     for (Event e : inputs) {
       ExecData d = new ExecData();
-      
+
       d.toEnvironment("answer", 2, true);
       d.toEnvironment("date1", 0, true);
       d.toEnvironment("date2", 0, true);
@@ -34,21 +35,33 @@ public class LogDSL extends DSL {
       d.toEnvironment("client_id", client_id, true);
       d.toEnvironment("client", client, false);
       d.toEnvironment("log", inputs, false);
-      
-      d.toEnvironment("anomaly_type", ERROR, false);
-
-      d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0));
-      d.toArgument("event", e);
-      
+    
       d.toProgram("id", Executor.BEGIN);
       d.toProgram("program", "begin");
-      
+    
+      if (command.equals("query")) {
+        d.toEnvironment("anomaly_type", QUERY, false);
+
+        d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0));
+        d.toArgument("event", e);
+
+      } else if (command.equals("status")) {
+      } else if (command.equals("sla")) {
+      }
       data.add(d); 
     }
   }
 
-  public void detect_anomaity_query_logs()throws Exception {
+  public void execute(String command)throws Exception {
     for (ExecData d : data) {
+      
+      if (command.equals("query")) {
+        exec.compare_to_period(d);
+        exec.compare_to_period(d);
+      } else if (command.equals("status")) {
+      } else if (command.equals("sla")) {
+      }
+      
       exec.prepare_data(d);
       exec.anomaly_detect(d);
       exec.validate(d);

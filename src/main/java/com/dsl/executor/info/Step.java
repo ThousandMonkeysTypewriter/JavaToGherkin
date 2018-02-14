@@ -6,12 +6,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class Step {
-  public HashMap<String, Element> environment = new HashMap<String, Element>();
+  public HashMap<String, Element> supervised_env = new HashMap<String, Element>();
+  public HashMap<String, Element> unsupervised_env = new HashMap<String, Element>();
   public HashMap<String, Element> program = new HashMap<String, Element>();
   public HashMap<String, Element> argument = new HashMap<String, Element>();
   
   public void fill_defaults(Step st) {
-    copy_from(environment, st.environment);
+    copy_from(supervised_env, st.supervised_env);
     copy_from(program, st.program);
     copy_from(argument, st.argument);
   }
@@ -23,11 +24,11 @@ public class Step {
   } 
 
   public String toString () {
-    return "environment "+environment+", program"+program+", argument"+argument;
+    return "environment "+supervised_env+", program"+program+", argument"+argument;
   }
 
   public void clear() {
-    for(Iterator<Entry<String, Element>> it = environment.entrySet().iterator(); it.hasNext(); ) {
+    for(Iterator<Entry<String, Element>> it = supervised_env.entrySet().iterator(); it.hasNext(); ) {
       Entry<String, Element> entry = it.next();
       if(!entry.getValue().isVisible()) {
         it.remove();
