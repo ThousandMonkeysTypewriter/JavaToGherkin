@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.dsl.formats.detection_log.Event;
+import com.dsl.formats.detection_log.EventAtMinute;
 import com.dsl.formats.detection_log.LogDSL;
 import com.dsl.formats.detection_log.LogUtils;
 import com.dsl.formats.redirect.RedirectDSL;
@@ -57,18 +58,18 @@ public class Data {
         RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<Integer>(Arrays.asList(outputs)), redirects);
         rdsl.check_redirects();
       } else if (args[0].equals("log")) {
-        ArrayList<Event> inputs = new ArrayList<Event>();
         String client = args[2];
         int client_id =  Integer.parseInt(args[3]);
         String command = args[1];
-                
+        
+        ArrayList<Event> events = new ArrayList<Event>();
         BufferedReader br = new BufferedReader(new FileReader("/root/NeuralProgramSynthesis/dsl/data/logs/"+client+".json"));
         for(String line; (line = br.readLine()) != null; ) {
           Event e = new Gson().fromJson(line.replace("@timestamp", "timestamp"), Event.class);
           if (e._source != null) {
             if (count > limit)
                 break;
-            inputs.add(e);
+            events.add(e);
             e.setTimes();
             e.setId(count);
           }
@@ -76,9 +77,19 @@ public class Data {
         }
         br.close();
         
+        HashMap<EventAtMinute, EventAtMinute> inputs = new HashMap<>();
+        
+        for (Event e : events) {
+          EventAtMinute ev = new EventAtMinute(e);
+          if (!inputs.containsKey(ev))
+            inputs.put(ev, ev);
+          else
+            inputs.get(ev).update(ev);
+        }
+        
         ArrayList<Integer> outputs = null;
 
-        LogDSL log_dsl = new LogDSL(inputs, outputs, client, command, client_id);
+        LogDSL log_dsl = new LogDSL(new ArrayList<>(inputs.values()), outputs, client, command, client_id);
         log_dsl.execute(command);
       }
     } catch (Exception e) {

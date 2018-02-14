@@ -20,9 +20,9 @@ public class LogDSL extends DSL {
   private static final int STATUS = 1;
 
 
-  public LogDSL(ArrayList<Event> inputs, ArrayList<Integer> outputs, String client, String command, int client_id) {
+  public LogDSL(ArrayList<EventAtMinute> inputs, ArrayList<Integer> outputs, String client, String command, int client_id) {
     super(inputs, outputs);
-    for (Event e : inputs) {
+    for (EventAtMinute e : inputs) {
       ExecData d = new ExecData();
 
       d.toEnvironment("answer", 2, true);
@@ -39,7 +39,7 @@ public class LogDSL extends DSL {
       d.toProgram("id", Executor.BEGIN);
       d.toProgram("program", "begin");
       
-      d.toArgument("id", (int)LogUtils.countAtMinute(e, inputs, 0, command));
+      d.toArgument("id", e.getOut(command));
       d.toArgument("event", e);
     
       if (command.equals("query")) 
