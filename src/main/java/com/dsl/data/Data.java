@@ -29,6 +29,7 @@ import com.dsl.formats.redirect.RedirectDSL;
 import com.dsl.formats.redirect.RedirectData;
 import com.dsl.formats.redirect.RedirectUtils;
 import com.dsl.formats.redirect.RedirectsJson;
+import com.unsupervised.Predictor;
 import com.google.gson.Gson;
 
 public class Data {
@@ -37,6 +38,7 @@ public class Data {
 
   public static void main(String[] args) {
     int count = 0;
+    Predictor pred = new Predictor();
     try {
       if (args[0].equals("generate_redirects")) {
         Map<String,Collection<RedirectData>> redirects = new HashMap<String, Collection<RedirectData>>();
@@ -50,11 +52,12 @@ public class Data {
           queries.add(r.get(0).trim().toLowerCase());
           count ++;
         }
-        Integer[] outputs = new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/answers.json"), Integer[].class);
 
         Set<String> qs = new HashSet<String>(queries);
         ArrayList<String> inputs = new ArrayList<String>(qs);
 
+        Integer[] outputs = new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/answers.json"), Integer[].class);
+    
         RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<Integer>(Arrays.asList(outputs)), redirects);
         rdsl.check_redirects();
       } else if (args[0].equals("log")) {
@@ -86,9 +89,9 @@ public class Data {
           else
             inputs.get(ev).update(ev);
         }
-        
-        ArrayList<Integer> outputs = null;
 
+        ArrayList<Integer> outputs = red.execute(events);
+                
         LogDSL log_dsl = new LogDSL(new ArrayList<>(inputs.values()), outputs, client, command, client_id);
         log_dsl.execute(command);
       }
