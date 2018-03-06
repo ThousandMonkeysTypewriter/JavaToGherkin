@@ -35,7 +35,8 @@ import com.google.gson.Gson;
 public class Data {
 
   public static final int limit = 15000;
-
+  private static String dsl_buffer = "/root/data/dsl_buffer/";
+  
   public static void main(String[] args) {
     int count = 0;
     Predictor pred = new Predictor();
@@ -45,8 +46,8 @@ public class Data {
         HashSet<String> queries = new HashSet<String>();      
 
         redirects = RedirectUtils.loadRedirects(
-            new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/redirects.json"), RedirectsJson[].class));
-        for ( ArrayList<String> r : new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/all_requests.json"), ArrayList[].class)) {
+            new Gson().fromJson(new FileReader(dsl_buffer+"redirects.json"), RedirectsJson[].class));
+        for ( ArrayList<String> r : new Gson().fromJson(new FileReader(dsl_buffer+"all_requests.json"), ArrayList[].class)) {
           if (count > limit)
             break;
           queries.add(r.get(0).trim().toLowerCase());
@@ -56,7 +57,7 @@ public class Data {
         Set<String> qs = new HashSet<String>(queries);
         ArrayList<String> inputs = new ArrayList<String>(qs);
 
-        Integer[] outputs = new Gson().fromJson(new FileReader("/root/NeuralProgramSynthesis/dsl/data/answers.json"), Integer[].class);
+        Integer[] outputs = new Gson().fromJson(new FileReader("/root/data/dsl_buffer/answers.json"), Integer[].class);
     
         RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<Integer>(Arrays.asList(outputs)), redirects);
         rdsl.check_redirects();
@@ -90,10 +91,27 @@ public class Data {
             inputs.get(ev).update(ev);
         }
 
-        ArrayList<Integer> outputs = red.execute(events);
+        ArrayList<Integer> outputs = pred.execute(events);
                 
         LogDSL log_dsl = new LogDSL(new ArrayList<>(inputs.values()), outputs, client, command, client_id);
         log_dsl.execute(command);
+      } else if (args[0].equals("test")) {
+        HashSet<String> inps = new HashSet<String>();      
+
+        for ( ArrayList<String> r : new Gson().fromJson(new FileReader(dsl_buffer+"all_requests.json"), ArrayList[].class)) {
+          if (count > limit)
+            break;
+          inps.add(r.get(0).trim().toLowerCase());
+          count ++;
+        }
+
+        Set<String> ins = new HashSet<String>(inps);
+        ArrayList<String> inputs = new ArrayList<String>(ins);
+
+        Integer[] outputs = new Gson().fromJson(new FileReader(dsl_buffer+"answers.json"), Integer[].class);
+    
+        RedirectDSL rdsl = new RedirectDSL(inputs, new ArrayList<Integer>(Arrays.asList(outputs)), null);
+        rdsl.check_redirects();
       }
     } catch (Exception e) {
       e.printStackTrace();

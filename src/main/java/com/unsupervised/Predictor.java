@@ -35,7 +35,7 @@ public class Predictor {
      public Predictor() {
      }
      
-     public ArrayList<Integer> execute() {
+     public ArrayList<Integer> execute(ArrayList<Event> events) {
          ArrayList<Integer> predictions = new ArrayList<>();
          return predictions;
      }
